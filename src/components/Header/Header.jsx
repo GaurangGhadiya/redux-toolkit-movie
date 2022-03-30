@@ -11,6 +11,9 @@ import Menu from "@mui/material/Menu";
 import MenuIcon from "@mui/icons-material/Menu";
 import SearchIcon from "@mui/icons-material/Search";
 import AccountCircle from "@mui/icons-material/AccountCircle";
+import { Navigate, useNavigate } from "react-router-dom";
+import { getUser } from "features/Auth/LoginSlice";
+import { useSelector } from "react-redux";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -59,6 +62,7 @@ const Header = () => {
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
+  const userInfo = useSelector(getUser);
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -67,9 +71,15 @@ const Header = () => {
     setMobileMoreAnchorEl(null);
   };
 
+  const navigate = useNavigate();
   const handleMenuClose = () => {
     setAnchorEl(null);
     handleMobileMenuClose();
+  };
+
+  const logout = () => {
+    localStorage.removeItem("userInfo");
+    navigate("/login");
   };
 
   const menuId = "primary-search-account-menu";
@@ -89,7 +99,8 @@ const Header = () => {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem onClick={handleMenuClose}>Logout</MenuItem>
+      <MenuItem onClick={logout}>Logout</MenuItem>
+      <MenuItem onClick={() => navigate("/profile")}>Profile</MenuItem>
     </Menu>
   );
 
@@ -128,7 +139,7 @@ const Header = () => {
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: "flex", md: "flex" } }}>
             <IconButton
-              size="large"
+              size="small"
               edge="end"
               aria-label="account of current user"
               aria-controls={menuId}
@@ -136,8 +147,17 @@ const Header = () => {
               onClick={handleProfileMenuOpen}
               color="inherit"
             >
-              <AccountCircle />
+              {/* <AccountCircle /> */}
+              <img
+                src={
+                  "https://s3.ap-south-1.amazonaws.com/pip.innovation/" +
+                  userInfo?.image
+                }
+                width={20}
+                height={20}
+              />
             </IconButton>
+            <p class="m-0">{userInfo?.username}</p>
           </Box>
         </Toolbar>
       </AppBar>
